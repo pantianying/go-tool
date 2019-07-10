@@ -1,11 +1,12 @@
 package pstrings
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
 
-func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string) {
+func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string,err error) {
 	result = make(map[string]string)
 	ss1 := strings.Split(pattern, leftSep)
 	var sss []string //多余字符串数组
@@ -19,7 +20,7 @@ func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string)
 					sss = append(sss, cs[1])
 				}
 			} else {
-				panic(" len(cs) != 2")
+				err=errors.New("pattern is not as required")
 			}
 		} else {
 			if k != "" {

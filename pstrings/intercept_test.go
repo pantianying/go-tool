@@ -8,6 +8,6 @@ import (
 func TestIntercept(t *testing.T) {
 	pattern := "/test/cccc/{id}/get/{name}"
 	url := "/test/cccc/22222/get/pan"
-	result := Intercept(pattern, url, "{", "}")
-	assert.Equal(t, result["name"], "pan2")
+	result,_ := Intercept(pattern, url, "{", "}")
+	assert.Equal(t, result["name"], "pan")
 }
