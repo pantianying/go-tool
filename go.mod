@@ -1,4 +1,4 @@
-module github/pantianying/go-tool
+module github.com/pantianying/go-tool
 
 go 1.12
 
