@@ -6,7 +6,9 @@ import (
 	"strings"
 )
 
-func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string,err error) {
+var conErr = errors.New("pattern is not as required")
+
+func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string, err error) {
 	result = make(map[string]string)
 	ss1 := strings.Split(pattern, leftSep)
 	var sss []string //多余字符串数组
@@ -20,7 +22,8 @@ func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string,
 					sss = append(sss, cs[1])
 				}
 			} else {
-				err=errors.New("pattern is not as required")
+				err = conErr
+				return
 			}
 		} else {
 			if k != "" {
@@ -28,13 +31,25 @@ func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string,
 			}
 		}
 	}
-	for i, _ := range kkk {
+	for i := range kkk {
 		if i == len(sss)-1 {
 			indexStart := strings.Index(in, sss[i]) + len(sss[i])
+			if indexStart > len(in) {
+				err = conErr
+				return
+			}
 			result[kkk[i]] = in[indexStart:]
 		} else {
 			indexStart := strings.Index(in, sss[i]) + len(sss[i])
+			if indexStart > len(in) {
+				err = conErr
+				return
+			}
 			indexStop := strings.Index(in, sss[i+1]) + 1
+			if indexStop-1 > len(in) {
+				err = conErr
+				return
+			}
 			fmt.Println(indexStart, indexStop, sss[i], sss[i+1])
 			result[kkk[i]] = in[indexStart : indexStop-1]
 		}
