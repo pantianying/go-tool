@@ -27,7 +27,7 @@ func Test_Map2xx_yy(t *testing.T) {
 	testData.CaCa.XxYy.Xx = "3"
 
 	m := Struct2Map(testData)
-	Map2xx_yy(m)
+	Map2x_y(m)
 	s, e := json.Marshal(m)
 	assert.Equal(t, e, nil)
 	assert.Equal(t, string(s), `{"aa_aa":"1","ba_ba":"1","ca_ca":{"aa_aa":"2","ba_ba":"2","xx_yy":{"xx":"3","xx_xx":"3"}}}`)
