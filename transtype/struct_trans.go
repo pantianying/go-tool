@@ -16,6 +16,7 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 	}
 	return data
 }
+
 func HttpHeadtoMap(header http.Header) (h map[string]string) {
 	h = make(map[string]string)
 	for k, v := range header {
@@ -26,7 +27,9 @@ func HttpHeadtoMap(header http.Header) (h map[string]string) {
 	}
 	return
 }
-func XxYyToxx_yy(s string) string {
+
+/* 驼峰转下划线 */
+func XY2_x_y(s string) string {
 	data := make([]byte, 0, len(s)*2)
 	j := false
 	num := len(s)
@@ -41,4 +44,22 @@ func XxYyToxx_yy(s string) string {
 		data = append(data, d)
 	}
 	return strings.ToLower(string(data[:]))
+}
+
+/* map的key驼峰转下划线，会遍历所有的key */
+func Map2x_y(m map[string]interface{}) {
+	for k1, v1 := range m {
+		x := XY2_x_y(k1)
+		if k1 != x {
+			delete(m, k1)
+			if reflect.TypeOf(v1).Kind() == reflect.Struct {
+				m[x] = Struct2Map(v1)
+				Map2x_y(m[x].(map[string]interface{}))
+			} else {
+				m[x] = v1
+			}
+
+		}
+
+	}
 }
