@@ -2,7 +2,6 @@ package pstrings
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -50,7 +49,6 @@ func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string,
 				err = conErr
 				return
 			}
-			fmt.Println(indexStart, indexStop, sss[i], sss[i+1])
 			result[kkk[i]] = in[indexStart : indexStop-1]
 		}
 	}
