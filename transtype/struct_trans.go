@@ -16,6 +16,39 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 	}
 	return data
 }
+func Struct2MapAll(obj interface{}) map[string]interface{} {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+	result := make(map[string]interface{})
+	if reflect.TypeOf(obj).Kind() == reflect.Struct {
+		for i := 0; i < t.NumField(); i++ {
+			if v.Field(i).Kind() == reflect.Struct {
+				if v.Field(i).CanInterface() {
+					if tagName := t.Field(i).Tag.Get("m"); tagName == "" {
+						result[t.Field(i).Name] = Struct2MapAll(v.Field(i).Interface())
+					} else {
+						result[tagName] = Struct2MapAll(v.Field(i).Interface())
+					}
+
+				} else {
+					println("not in to map,field:" + t.Field(i).Name)
+				}
+			} else {
+				if v.Field(i).CanInterface() {
+					if tagName := t.Field(i).Tag.Get("m"); tagName == "" {
+						result[t.Field(i).Name] = v.Field(i).Interface()
+					} else {
+						result[tagName] = v.Field(i).Interface()
+					}
+				} else {
+					println("not in to map,field:" + t.Field(i).Name)
+				}
+
+			}
+		}
+	}
+	return result
+}
 
 func HttpHeadtoMap(header http.Header) (h map[string]string) {
 	h = make(map[string]string)
