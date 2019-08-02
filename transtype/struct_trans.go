@@ -17,9 +17,13 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 	return data
 }
 func Struct2MapAll(obj interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+	if obj == nil {
+		return result
+	}
 	t := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
-	result := make(map[string]interface{})
+
 	if reflect.TypeOf(obj).Kind() == reflect.Struct {
 		for i := 0; i < t.NumField(); i++ {
 			if v.Field(i).Kind() == reflect.Struct {
