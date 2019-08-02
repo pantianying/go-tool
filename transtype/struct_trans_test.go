@@ -58,7 +58,7 @@ func Test_Struct2Map(t *testing.T) {
 	get := fmt.Sprintf("%v", m)
 	assert.Equal(t, expect, get)
 }
-func Test_Struct2Map2(t *testing.T) {
+func Test_Struct2MapAll(t *testing.T) {
 	var testData struct {
 		AaAa string `m:"aaAa"`
 		BaBa string `m:"baBa"`

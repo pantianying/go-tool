@@ -85,13 +85,14 @@ func Map2x_y(m map[string]interface{}) {
 		x := XY2_x_y(k1)
 		if k1 != x {
 			delete(m, k1)
-			if reflect.TypeOf(v1).Kind() == reflect.Struct {
+			if v1 == nil {
+				m[x] = v1
+			} else if reflect.TypeOf(v1).Kind() == reflect.Struct {
 				m[x] = Struct2Map(v1)
 				Map2x_y(m[x].(map[string]interface{}))
 			} else {
 				m[x] = v1
 			}
-
 		}
 
 	}
