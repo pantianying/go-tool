@@ -1,7 +1,6 @@
 package transtype
 
 import (
-	"net/http"
 	"reflect"
 	"strings"
 )
@@ -16,52 +15,53 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 	}
 	return data
 }
-func Struct2MapAll(obj interface{}) map[string]interface{} {
-	result := make(map[string]interface{})
+func Struct2MapAll(obj interface{}) interface{} {
 	if obj == nil {
-		return result
+		return obj
 	}
 	t := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
-
-	if reflect.TypeOf(obj).Kind() == reflect.Struct {
+	if t.Kind() == reflect.Struct {
+		result := make(map[string]interface{})
 		for i := 0; i < t.NumField(); i++ {
 			if v.Field(i).Kind() == reflect.Struct {
 				if v.Field(i).CanInterface() {
-					if tagName := t.Field(i).Tag.Get("m"); tagName == "" {
-						result[t.Field(i).Name] = Struct2MapAll(v.Field(i).Interface())
-					} else {
-						result[tagName] = Struct2MapAll(v.Field(i).Interface())
-					}
-
-				} else {
-					println("not in to map,field:" + t.Field(i).Name)
+					setInMap(result, t.Field(i), Struct2MapAll(v.Field(i).Interface()))
+				}
+			} else if v.Field(i).Kind() == reflect.Slice {
+				if v.Field(i).CanInterface() {
+					setInMap(result, t.Field(i), Struct2MapAll(v.Field(i).Interface()))
 				}
 			} else {
 				if v.Field(i).CanInterface() {
-					if tagName := t.Field(i).Tag.Get("m"); tagName == "" {
-						result[t.Field(i).Name] = v.Field(i).Interface()
-					} else {
-						result[tagName] = v.Field(i).Interface()
-					}
-				} else {
-					println("not in to map,field:" + t.Field(i).Name)
+					setInMap(result, t.Field(i), v.Field(i).Interface())
 				}
-
 			}
 		}
-	}
-	return result
-}
-
-func HttpHeadtoMap(header http.Header) (h map[string]string) {
-	h = make(map[string]string)
-	for k, v := range header {
-		if len(v) != 1 {
-			continue
+		return result
+	} else if t.Kind() == reflect.Slice {
+		value := reflect.ValueOf(obj)
+		var newTemps []interface{}
+		for i := 0; i < value.Len(); i++ {
+			newTemp := Struct2MapAll(value.Index(i).Interface())
+			newTemps = append(newTemps, newTemp)
 		}
-		h[k] = v[0]
+		return newTemps
+	} else {
+		return obj
 	}
+}
+func setInMap(m map[string]interface{}, structField reflect.StructField, value interface{}) (result map[string]interface{}) {
+	result = m
+	if tagName := structField.Tag.Get("m"); tagName == "" {
+		result[headerAtoa(structField.Name)] = value
+	} else {
+		result[tagName] = value
+	}
+	return
+}
+func headerAtoa(a string) (b string) {
+	b = strings.ToLower(a[:1]) + a[1:]
 	return
 }
 
