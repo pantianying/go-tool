@@ -1,46 +1,32 @@
 package transtype
 
-import "errors"
-
-func MapIItoMapSI(in interface{}) (out interface{}, err error) {
-	if _, ok := in.(map[interface{}]interface{}); !ok {
-		out = in
-		return
-	}
+func MapIItoMapSI(in interface{}) interface{} {
 	in_map := make(map[interface{}]interface{})
-	out_map := make(map[string]interface{})
-	in_map = in.(map[interface{}]interface{})
-	out = make(map[string]interface{})
+	if v, ok := in.(map[interface{}]interface{}); !ok {
+		return in
+	} else {
+		in_map = v
+	}
+
+	out_map := make(map[string]interface{}, len(in_map))
 	for k, v := range in_map {
 		if s, ok := k.(string); ok {
-			if s == "class" {
-				//class字段不返回
+			if s == "class" || v == nil {
 				continue
 			}
 			if _, ok := v.(map[interface{}]interface{}); ok {
-				v, err = MapIItoMapSI(v)
-				if err != nil {
-					return
-				}
+				v = MapIItoMapSI(v)
 			}
 			if vv, ok := v.([]interface{}); ok {
-				var os []interface{}
+				var os = make([]interface{}, 0, len(vv))
 				for i := range vv {
-					osv, e := MapIItoMapSI(vv[i])
-					if e != nil {
-						err = e
-						return
-					}
+					osv := MapIItoMapSI(vv[i])
 					os = append(os, osv)
 				}
 				v = os
 			}
 			out_map[s] = v
-		} else {
-			err = errors.New("key's type not string")
-			return
 		}
 	}
-	out = out_map
-	return
+	return out_map
 }
