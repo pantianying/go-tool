@@ -2,12 +2,20 @@ package pstrings
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
 var conErr = errors.New("pattern is not as required")
 
 func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(pattern, in, leftSep, rightSep)
+			err = conErr
+			return
+		}
+	}()
 	result = make(map[string]string)
 	ss1 := strings.Split(pattern, leftSep)
 	var sss []string //多余字符串数组
