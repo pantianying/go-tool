@@ -2,20 +2,12 @@ package pstrings
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 )
 
 var conErr = errors.New("pattern is not as required")
 
 func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println(pattern, in, leftSep, rightSep)
-			err = conErr
-			return
-		}
-	}()
 	result = make(map[string]string)
 	ss1 := strings.Split(pattern, leftSep)
 	var sss []string //多余字符串数组
@@ -57,7 +49,29 @@ func Intercept(pattern, in, leftSep, rightSep string) (result map[string]string,
 				err = conErr
 				return
 			}
+			if indexStop <= indexStart {
+				err = conErr
+				return
+			}
 			result[kkk[i]] = in[indexStart : indexStop-1]
+		}
+	}
+	return
+}
+func InterceptV2(pattern, in, leftSep, rightSep string) (result map[string]string, err error) {
+	result = make(map[string]string, 1)
+	ssp := strings.Split(pattern, "/") //按pattern切割
+	ssi := strings.Split(in, "/")
+	if len(ssp) != len(ssi) {
+		err = conErr
+		return
+	}
+	for i := range ssp {
+		if len(ssp[i]) > 2 {
+			if ssp[i][:1] == leftSep {
+				//确认是{}
+				result[ssp[i][1:len(ssp[i])-1]] = ssi[i]
+			}
 		}
 	}
 	return
